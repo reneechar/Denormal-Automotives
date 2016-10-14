@@ -49,64 +49,33 @@ FROM car_models;
 -- USING INNER JOIN
 INSERT INTO model
   SELECT model_title, model_code, year, id
-  FROM
-    (SELECT
-      car_models.model_code,
-      car_models.model_title,
-      car_models.make_title,
-      car_models.year,
-      make.ma_title,
-      make.id
-      FROM
-        car_models
-        INNER JOIN make ON car_models.make_title = make.ma_title
-          ORDER BY car_models.year) AS joined_table;
+  FROM car_models
+  INNER JOIN make ON car_models.make_title = make.ma_title
+  ORDER BY car_models.year;
 
--- SELECT ma_title
--- FROM make;
+SELECT ma_title
+FROM make;
 
--- SELECT COUNT(ma_title)
--- FROM make;
+SELECT COUNT(ma_title)
+FROM make;
 
 
 SELECT DISTINCT mo_title
-  FROM
-    (SELECT
-      make.ma_code,
-      make.id,
-      model.make_id,
-      model.mo_title
-      FROM
-        make
-        INNER JOIN model ON make.id = model.make_id) AS normal_table
-    WHERE ma_code = 'VOLKS';
+  FROM make
+  INNER JOIN model ON make.id = model.make_id
+  WHERE ma_code = 'VOLKS';
 
 SELECT DISTINCT ma_code, mo_code, mo_title, year
-  FROM
-    (SELECT
-      make.ma_code,
-      model.mo_code,
-      model.mo_title,
-      model.year
-      FROM
-        make
-        INNER JOIN model ON make.id = model.make_id) AS normal_table2
-      WHERE ma_code = 'LAM';
+  FROM make
+  INNER JOIN model ON make.id = model.make_id
+  WHERE ma_code = 'LAM';
 
 SELECT COUNT(*)
   FROM (
     SELECT DISTINCT ma_code, mo_code, mo_title, year
-      FROM
-        (SELECT
-          make.ma_code,
-          model.mo_code,
-          model.mo_title,
-          model.year
-          FROM
-            make
-            INNER JOIN model ON make.id = model.make_id) AS normal_table2
-          WHERE ma_code = 'LAM') AS SOMETHING;
-
+      FROM make
+      INNER JOIN model ON make.id = model.make_id
+      WHERE ma_code = 'LAM') AS SOMETHING;
 
 SELECT
   make.ma_code,
@@ -114,20 +83,11 @@ SELECT
   model.mo_code,
   model.mo_title,
   model.year
-  FROM
-    make
-    INNER JOIN model ON make.id = model.make_id
+  FROM make
+  INNER JOIN model ON make.id = model.make_id
   WHERE year BETWEEN 2010 AND 2015;
 
 SELECT COUNT(*)
-  FROM
-    (SELECT
-      make.ma_code,
-      make.ma_title,
-      model.mo_code,
-      model.mo_title,
-      model.year
-      FROM
-        make
-        INNER JOIN model ON make.id = model.make_id) AS normal_table3
-      WHERE year BETWEEN 2010 AND 2015;
+  FROM make
+  INNER JOIN model ON make.id = model.make_id
+  WHERE year BETWEEN 2010 AND 2015;
