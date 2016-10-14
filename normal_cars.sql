@@ -17,14 +17,14 @@ CREATE DATABASE normal_cars OWNER normal_user;
 
 --create unique make ids to add to model table
 CREATE TABLE make (
-  title text,
-  code text,
+  ma_title text,
+  ma_code text,
   id serial PRIMARY KEY -- PK
 );
 
 CREATE TABLE model (
-  title text,
-  code text,
+  mo_title text,
+  mo_code text,
   year integer,
   make_id serial REFERENCES make(id), -- FK
   id serial PRIMARY KEY
@@ -38,21 +38,15 @@ FROM car_models;
 -- insert rows into model table
 -- need to join data from car_models table and make table
 
--- SELECT car_models.model_title, car_models.model_code, car_models.year, make.id
--- FROM make, car_models
--- WHERE title = make_title;
-
-
+-- USING SUBQUERIES
 -- INSERT INTO model
---   SELECT (model_title, model_code, year, model.make_id)
+--   SELECT model_title, model_code, year, id
 --   FROM
 --     (SELECT car_models.model_title, car_models.model_code, car_models.year, make.id
 --       FROM make, car_models
---       WHERE make.title = car_models.make_title) AS temp;
+--       WHERE make.ma_title = car_models.make_title) AS temp;
 
---USING INNER JOIN
-
-
+-- USING INNER JOIN
 INSERT INTO model
   SELECT model_title, model_code, year, id
   FROM
@@ -61,20 +55,79 @@ INSERT INTO model
       car_models.model_title,
       car_models.make_title,
       car_models.year,
-      make.title,
+      make.ma_title,
       make.id
       FROM
         car_models
-        INNER JOIN make ON car_models.make_title = make.title
-          ORDER BY car_models.year) AS joinedTable;
+        INNER JOIN make ON car_models.make_title = make.ma_title
+          ORDER BY car_models.year) AS joined_table;
+
+-- SELECT ma_title
+-- FROM make;
+
+-- SELECT COUNT(ma_title)
+-- FROM make;
 
 
-SELECT * FROM model;
+SELECT DISTINCT mo_title
+  FROM
+    (SELECT
+      make.ma_code,
+      make.id,
+      model.make_id,
+      model.mo_title
+      FROM
+        make
+        INNER JOIN model ON make.id = model.make_id) AS normal_table
+    WHERE ma_code = 'VOLKS';
+
+SELECT DISTINCT ma_code, mo_code, mo_title, year
+  FROM
+    (SELECT
+      make.ma_code,
+      model.mo_code,
+      model.mo_title,
+      model.year
+      FROM
+        make
+        INNER JOIN model ON make.id = model.make_id) AS normal_table2
+      WHERE ma_code = 'LAM';
+
+SELECT COUNT(*)
+  FROM (
+    SELECT DISTINCT ma_code, mo_code, mo_title, year
+      FROM
+        (SELECT
+          make.ma_code,
+          model.mo_code,
+          model.mo_title,
+          model.year
+          FROM
+            make
+            INNER JOIN model ON make.id = model.make_id) AS normal_table2
+          WHERE ma_code = 'LAM') AS SOMETHING;
 
 
--- SELECT * FROM model;
--- SELECT COUNT(*) FROM make;
--- SELECT COUNT(*) FROM model;
+SELECT
+  make.ma_code,
+  make.ma_title,
+  model.mo_code,
+  model.mo_title,
+  model.year
+  FROM
+    make
+    INNER JOIN model ON make.id = model.make_id
+  WHERE year BETWEEN 2010 AND 2015;
 
-
-
+SELECT COUNT(*)
+  FROM
+    (SELECT
+      make.ma_code,
+      make.ma_title,
+      model.mo_code,
+      model.mo_title,
+      model.year
+      FROM
+        make
+        INNER JOIN model ON make.id = model.make_id) AS normal_table3
+      WHERE year BETWEEN 2010 AND 2015;
